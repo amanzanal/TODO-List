@@ -5,33 +5,25 @@ const {
     getTaskById,
     createTask,
     updateTask,
-    deleteTask
+    deleteTask,
 } = require("../controllers/task.controller");
+
+const authenticate = require("../middleware/auth.middleware");
 
 const {
     validateTask,
-    validateId
+    validateId,
 } = require("../middleware/taskValidation");
 
 const router = express.Router();
 
+// Todas las rutas de tareas requieren autenticación.
+router.use(authenticate);
+
 router.get("/", getTasks);
-
 router.get("/:id", validateId, getTaskById);
-
 router.post("/", validateTask, createTask);
-
-router.put(
-    "/:id",
-    validateId,
-    validateTask,
-    updateTask
-);
-
-router.delete(
-    "/:id",
-    validateId,
-    deleteTask
-);
+router.put("/:id", validateId, validateTask, updateTask);
+router.delete("/:id", validateId, deleteTask);
 
 module.exports = router;

@@ -1,24 +1,24 @@
 const taskService = require("../services/task.service");
 
-// GET /api/tasks
 const getTasks = async (req, res, next) => {
     try {
-        const tasks = await taskService.getAllTasks();
-
+        const tasks = await taskService.getAllTasks(req.user.id);
         res.json(tasks);
     } catch (error) {
         next(error);
     }
 };
 
-// GET /api/tasks/:id
 const getTaskById = async (req, res, next) => {
     try {
-        const task = await taskService.getTaskById(req.params.id);
+        const task = await taskService.getTaskById(
+            req.params.id,
+            req.user.id
+        );
 
         if (!task) {
             return res.status(404).json({
-                message: "Task not found"
+                message: "Task not found",
             });
         }
 
@@ -28,15 +28,17 @@ const getTaskById = async (req, res, next) => {
     }
 };
 
-// POST /api/tasks
 const createTask = async (req, res, next) => {
     try {
         const { title, completed } = req.body;
 
-        const task = await taskService.createTask({
-            title: title.trim(),
-            completed: completed ?? false
-        });
+        const task = await taskService.createTask(
+            {
+                title: title.trim(),
+                completed: completed ?? false,
+            },
+            req.user.id
+        );
 
         res.status(201).json(task);
     } catch (error) {
@@ -44,7 +46,6 @@ const createTask = async (req, res, next) => {
     }
 };
 
-// PUT /api/tasks/:id
 const updateTask = async (req, res, next) => {
     try {
         const { title, completed } = req.body;
@@ -53,13 +54,14 @@ const updateTask = async (req, res, next) => {
             req.params.id,
             {
                 title: title.trim(),
-                completed
-            }
+                completed,
+            },
+            req.user.id
         );
 
         if (!task) {
             return res.status(404).json({
-                message: "Task not found"
+                message: "Task not found",
             });
         }
 
@@ -69,19 +71,21 @@ const updateTask = async (req, res, next) => {
     }
 };
 
-// DELETE /api/tasks/:id
 const deleteTask = async (req, res, next) => {
     try {
-        const task = await taskService.deleteTask(req.params.id);
+        const task = await taskService.deleteTask(
+            req.params.id,
+            req.user.id
+        );
 
         if (!task) {
             return res.status(404).json({
-                message: "Task not found"
+                message: "Task not found",
             });
         }
 
         res.json({
-            message: "Task deleted successfully"
+            message: "Task deleted successfully",
         });
     } catch (error) {
         next(error);
@@ -93,5 +97,5 @@ module.exports = {
     getTaskById,
     createTask,
     updateTask,
-    deleteTask
+    deleteTask,
 };
