@@ -1,30 +1,36 @@
 const Task = require("../models/task");
 
-const getAllTasks = async () => {
-    return await Task.find().sort({ createdAt: -1 });
+const getAllTasks = async (userId) => {
+    return Task.find({ userId }).sort({ createdAt: -1 });
 };
 
-const getTaskById = async (id) => {
-    return await Task.findById(id);
+const getTaskById = async (id, userId) => {
+    return Task.findOne({ _id: id, userId });
 };
 
-const createTask = async (taskData) => {
-    return await Task.create(taskData);
+const createTask = async (taskData, userId) => {
+    return Task.create({
+        ...taskData,
+        userId,
+    });
 };
 
-const updateTask = async (id, taskData) => {
-    return await Task.findByIdAndUpdate(
-        id,
+const updateTask = async (id, taskData, userId) => {
+    return Task.findOneAndUpdate(
+        { _id: id, userId },
         taskData,
         {
             new: true,
-            runValidators: true
+            runValidators: true,
         }
     );
 };
 
-const deleteTask = async (id) => {
-    return await Task.findByIdAndDelete(id);
+const deleteTask = async (id, userId) => {
+    return Task.findOneAndDelete({
+        _id: id,
+        userId,
+    });
 };
 
 module.exports = {
@@ -32,5 +38,5 @@ module.exports = {
     getTaskById,
     createTask,
     updateTask,
-    deleteTask
+    deleteTask,
 };

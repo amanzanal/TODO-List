@@ -6,15 +6,20 @@ const {
     getTaskById,
     createTask,
     updateTask,
-    deleteTask
+    deleteTask,
 } = require("../controllers/task.controller");
+
+const authenticate = require("../middleware/auth.middleware");
 
 const {
     validateTask,
-    validateId
+    validateId,
 } = require("../middleware/taskValidation");
 
 const router = express.Router();
+
+// Todas las rutas de tareas requieren autenticación.
+router.use(authenticate);
 
 /**
  * @swagger
@@ -116,6 +121,8 @@ router.get("/:id", validateId, getTaskById);
  *         description: Error interno del servidor
  */
 router.post("/", validateTask, createTask);
+router.put("/:id", validateId, validateTask, updateTask);
+router.delete("/:id", validateId, deleteTask);
 
 /**
  * @swagger
