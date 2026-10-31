@@ -1,3 +1,4 @@
+
 const express = require("express");
 const helmet = require("helmet");
 const cors = require("cors");
@@ -6,6 +7,9 @@ const rateLimit = require("express-rate-limit");
 const taskRoutes = require("./src/routes/taskRoutes");
 const authRoutes = require("./src/routes/authRoutes");
 const errorHandler = require("./src/middleware/errorHandler");
+
+const swaggerUi = require("swagger-ui-express");
+const swaggerSpec = require("./src/config/swagger");
 
 const app = express();
 
@@ -44,6 +48,14 @@ const apiLimiter = rateLimit({
 
 app.use("/api", apiLimiter);
 
+// Documentación Swagger
+app.use(
+    "/api-docs",
+    swaggerUi.serve,
+    swaggerUi.setup(swaggerSpec)
+);
+
+// Ruta de comprobación
 app.get("/", (req, res) => {
     res.json({ message: "Todo API funcionando" });
 });
